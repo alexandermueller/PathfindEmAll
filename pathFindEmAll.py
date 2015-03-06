@@ -1,18 +1,20 @@
 #!/usr/bin/python
 
 from os import walk
-from pathFind import pathFind
+from pathFind import *
 
 maps = []
 for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
   maps.extend(filenames)
   break
 
-for mappingName in [m[:-4] for m in maps if 'simplePath.txt' in m]:
+for mappingName in [m[:-4] for m in maps if 'Difficult.txt' in m]:
     f = open('./Assets/Mappings/%s.txt' % (mappingName), 'r')
     mapping = list(f) 
     f.close()
-
+    
+    height = len(mapping)
+    width = len(mapping[0])
     visited = dict()
     paths = list()
     ladders = list()
@@ -32,11 +34,17 @@ for mappingName in [m[:-4] for m in maps if 'simplePath.txt' in m]:
     for exit in exits:
         x = exit[0]
         y = exit[1]
+        increment = width/4 if width > height else height/4
+        increment = 1
         visited['%d,%d' % (x, y)] = 1
-        path = pathFind(mapping, dict(visited), x, y, 0, 0)
-        if path != None:
-            print path
-            paths.append(path)
+        path = None
+        for i in xrange(1, 1000):
+            # print "Currently on %d" % i
+            path = pathFindDFS(mapping, dict(visited), x, y, 0, 0)
+            if path != None:
+                print path, len(path)
+                paths.append(path)
+                break
         visited['%d,%d' % (x, y)] = 0
     
     for path in paths:
