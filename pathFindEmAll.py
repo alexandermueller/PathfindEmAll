@@ -8,7 +8,7 @@ for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
   maps.extend(filenames)
   break
 
-for mappingName in [m[:-4] for m in maps if 'Path.txt' in m]:
+for mappingName in [m[:-4] for m in maps if 'testingMap.txt' in m]:
     f = open('./Assets/Mappings/%s.txt' % (mappingName), 'r')
     mapping = list(f) 
     f.close()
