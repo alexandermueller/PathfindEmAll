@@ -13,7 +13,8 @@ for mappingName in [m[:-4] for m in maps if 'Path.txt' in m]:
     mapping = list(f) 
     f.close()
 
-    visited = {}
+    visited = dict()
+    paths = list()
     ladders = list()
     exits = list()
     
@@ -31,15 +32,16 @@ for mappingName in [m[:-4] for m in maps if 'Path.txt' in m]:
     for exit in exits:
         x = exit[0]
         y = exit[1]
-        visited[x + ',' + y] = 1
+        visited['%d,%d' % (x, y)] = 1
         path = None
         for i in xrange(1,300):
             print "Currently on %d" % i
-            path = pathFind(list(tempMapping), x, y, 0, 0, i)
+            path = pathFind(mapping, dict(visited), x, y, 0, 0, i)
             if path != None:
                 print path, i
                 paths.append(path)
                 break
+        visited['%d,%d' % (x, y)] = 0
     
     for path in paths:
         for tile in path:
