@@ -8,7 +8,7 @@ for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
   maps.extend(filenames)
   break
 
-for mappingName in [m[:-4] for m in maps if 'testingMap.txt' in m]:
+for mappingName in [m[:-4] for m in maps if 'simplePath.txt' in m]:
     f = open('./Assets/Mappings/%s.txt' % (mappingName), 'r')
     mapping = list(f) 
     f.close()
@@ -33,14 +33,10 @@ for mappingName in [m[:-4] for m in maps if 'testingMap.txt' in m]:
         x = exit[0]
         y = exit[1]
         visited['%d,%d' % (x, y)] = 1
-        path = None
-        for i in xrange(1,300):
-            print "Currently on %d" % i
-            path = pathFind(mapping, dict(visited), x, y, 0, 0, i)
-            if path != None:
-                print path, i
-                paths.append(path)
-                break
+        path = pathFind(mapping, dict(visited), x, y, 0, 0)
+        if path != None:
+            print path
+            paths.append(path)
         visited['%d,%d' % (x, y)] = 0
     
     for path in paths:
