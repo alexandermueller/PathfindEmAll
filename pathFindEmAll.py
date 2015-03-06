@@ -8,7 +8,7 @@ for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
   maps.extend(filenames)
   break
 
-for mappingName in [m[:-4] for m in maps if 'Difficult.txt' in m]:
+for mappingName in [m[:-4] for m in maps if '.txt' in m]:
     f = open('./Assets/Mappings/%s.txt' % (mappingName), 'r')
     mapping = list(f) 
     f.close()
@@ -31,27 +31,41 @@ for mappingName in [m[:-4] for m in maps if 'Difficult.txt' in m]:
             j += 1
         i += 1
     
-    for exit in exits:
-        x = exit[0]
-        y = exit[1]
-        increment = width/4 if width > height else height/4
-        increment = 1
+    # Exit Order doesn't matter here, we're just trying to find an ordering of checkpoints to break the map up
+    checkpoints = list()
+    checkpoints.append(exits[0])
+    laddersCopy = list(ladders)
+    while True:
+        x = checkpoints[-1][0]
+        y = checkpoints[-1][1]
         visited['%d,%d' % (x, y)] = 1
         path = None
         for i in xrange(1, 1000):
-            # print "Currently on %d" % i
-            path = pathFindDFS(mapping, dict(visited), x, y, 0, 0)
+            print "Currently on mapping %s, checkpoint %d, with %d iterations" % (mappingName, len(checkpoints), i)
+            path = pathFindApproxIDDFS(mapping, dict(visited), x, y, 0, 0, i)
             if path != None:
-                print path, len(path)
                 paths.append(path)
+                checkpoint = list(path[-1])
+                checkpoints.append(checkpoint)
+                if checkpoint in ladders:
+                    laddersCopy.remove(checkpoint)
+                    checkpoints.append(laddersCopy[0])
                 break
-        visited['%d,%d' % (x, y)] = 0
-    
+        if checkpoints[-1] in exits:
+            break
+
+    # Then do the fine-grained search.
+    print "Checkpoints in the map: ", checkpoints
+    visited = dict()
+
+    # Insert fine-grained accurate path finding here
+
     for path in paths:
         for tile in path:
-            x = tile[0]
-            y = tile[1]
-            mapping[y] = mapping[y][:x] + '=' + mapping[y][x + 1:]
+                x = tile[0]
+                y = tile[1]
+                if mapping[y][x] not in ['E', 'H', 's']:
+                    mapping[y] = mapping[y][:x] + '=' + mapping[y][x + 1:]
 
     for line in mapping:
         print line
