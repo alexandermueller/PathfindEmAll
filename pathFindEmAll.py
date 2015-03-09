@@ -2,6 +2,7 @@
 
 from os import walk
 from pathFind import *
+from pathDraw import *
 
 maps = []
 for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
@@ -55,17 +56,38 @@ for mappingName in [m[:-4] for m in maps if '.txt' in m]:
             break
 
     # Then do the fine-grained search.
+    
     print "Checkpoints in the map: ", checkpoints
+
     visited = dict()
+    paths = list()
 
-    # Insert fine-grained accurate path finding here
+    while len(checkpoints) > 1:
+        goal = checkpoints[1]
+        x = checkpoints[0][0]
+        y = checkpoints[0][1]
+        visited['%d,%d' % (x, y)] = 1
+        path = None
+        for i in xrange(1, 1000):
+            print "Currently on mapping %s, %d checkpoints left, with %d iterations" % (mappingName, len(checkpoints), i)
+            path = pathFindIDDFS(mapping, goal, dict(visited), x, y, 0, 0, i)
+            if path != None:
+                paths.append(path)
+                checkpoints = checkpoints[1:]
+                if goal in ladders:
+                    checkpoints = checkpoints[1:]
+                break
 
+    directions = list()
     for path in paths:
         for tile in path:
                 x = tile[0]
                 y = tile[1]
+                directions += [(x * 16 + 8, y * 16 + 7)]
                 if mapping[y][x] not in ['E', 'H', 's']:
                     mapping[y] = mapping[y][:x] + '=' + mapping[y][x + 1:]
 
-    for line in mapping:
-        print line
+    for row in mapping:
+        print row
+    
+    pathDraw(directions, mappingName, height, width)
