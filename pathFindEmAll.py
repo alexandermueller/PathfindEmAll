@@ -4,13 +4,17 @@ from os import walk
 from pathFind import *
 from pathDraw import *
 
+testingPath = './Assets/Mappings/Testing'
+mappingsPath = './Assets/Mappings'
+workingDirectory = mappingsPath
+
 maps = []
-for (dirpath, dirnames, filenames) in walk('./Assets/Mappings'):
+for (dirpath, dirnames, filenames) in walk(workingDirectory):
   maps.extend(filenames)
   break
 
 for mappingName in [m[:-4] for m in maps if '.txt' in m]:
-    f = open('./Assets/Mappings/%s.txt' % (mappingName), 'r')
+    f = open('%s/%s.txt' % (workingDirectory, mappingName), 'r')
     mapping = list(f) 
     f.close()
     
@@ -32,7 +36,7 @@ for mappingName in [m[:-4] for m in maps if '.txt' in m]:
             j += 1
         i += 1
     
-    # Exit Order doesn't matter here, we're just trying to find an ordering of checkpoints to break the map up
+    # Exit order doesn't matter here, we're just trying to find an ordering of checkpoints to break the map up
     checkpoints = list()
     checkpoints.append(exits[0])
     laddersCopy = list(ladders)
@@ -59,24 +63,24 @@ for mappingName in [m[:-4] for m in maps if '.txt' in m]:
     
     print "Checkpoints in the map: ", checkpoints
 
-    visited = dict()
-    paths = list()
-
-    while len(checkpoints) > 1:
-        goal = checkpoints[1]
-        x = checkpoints[0][0]
-        y = checkpoints[0][1]
-        visited['%d,%d' % (x, y)] = 1
-        path = None
-        for i in xrange(1, 1000):
-            print "Currently on mapping %s, %d checkpoints left, with %d iterations" % (mappingName, len(checkpoints), i)
-            path = pathFindIDDFS(mapping, goal, dict(visited), x, y, 0, 0, i)
-            if path != None:
-                paths.append(path)
-                checkpoints = checkpoints[1:]
-                if goal in ladders:
+    if workingDirectory != testingPath:
+        visited = dict()
+        paths = list()
+        while len(checkpoints) > 1:
+            goal = checkpoints[1]
+            x = checkpoints[0][0]
+            y = checkpoints[0][1]
+            visited['%d,%d' % (x, y)] = 1
+            path = None
+            for i in xrange(1, 1000):
+                print "Currently on mapping %s, %d checkpoints left, with %d iterations" % (mappingName, len(checkpoints), i)
+                path = pathFindIDDFS(mapping, goal, dict(visited), x, y, 0, 0, i)
+                if path != None:
+                    paths.append(path)
                     checkpoints = checkpoints[1:]
-                break
+                    if goal in ladders:
+                        checkpoints = checkpoints[1:]
+                    break
 
     directions = list()
     for path in paths:

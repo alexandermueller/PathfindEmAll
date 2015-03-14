@@ -47,7 +47,7 @@ def pathFindApproxIDDFS(mapping, visited, x, y, xV, yV, iterations):
     width = len(mapping[y])
     height = len(mapping)
     if iterations == 0 or mapping[y][x] in ['E', 'H', 's'] and not visited.get('%d,%d' % (x, y)):
-        return None if mapping[y][x] not in ['E', 'H', 's'] else [[x, y]]
+        return [[x, y]] if mapping[y][x] in ['E', 'H', 's'] and not visited.get('%d,%d' % (x, y)) else None
 
     elif mapping[y][x] == 'i' and mapping[y + yV][x + xV] not in nonPassable[(xV, yV)]:
         path = pathFindApproxIDDFS(mapping, visited, x + xV, y + yV, xV, yV, iterations - 1)
